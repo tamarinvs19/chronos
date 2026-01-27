@@ -1,0 +1,52 @@
+.status-TODO {
+  background-color: rgb(240, 240, 240);
+}
+
+.status-IN_PROGRESS {
+  background-color: yellow;
+}
+
+.status-DONE {
+  background-color: limegreen;
+}
+
+.status-CANCELLED {
+  text-decoration: line-through;
+}
+
+ul.taskList {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.taskItemBlock {
+  padding: 12px;
+  margin: 12px;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+
+.navigationButton {
+  padding: 8px;
+  margin: 8px;
+  border: 1px solid black;
+  border-radius: 4px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.navigationDiv {
+  margin: 10px 4px;
+  padding-bottom: 20px;
+}
+
+.continuations-block {
+  display: none;
+}
+
+.toggle-continuations {
+  border: 0px solid black;
+  border-radius: 4px;
+  background-color: #fff;
+  float: right;
+}

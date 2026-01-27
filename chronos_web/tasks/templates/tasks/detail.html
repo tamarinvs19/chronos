@@ -1,0 +1,95 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="Task" content="width=device-width, initial-scale=1" />
+    <title>{{ task.title|slice:"0:30" }}</title>
+    <link href="{% static 'tasks/css/style.css' %}" rel="stylesheet" />
+  </head>
+  <body>
+    <h3 class="taskTitle">{{ task.title }}</h3>
+
+    <h5 class="taskStatus">
+      Status
+      <div id="taskStatus" class="status-{{ task.status }}">
+        {{ task.status }}
+      </div>
+    </h5>
+
+    {% if task.description|length > 0 %}
+    <p class="taskDescription">{{ task.description }}</p>
+    {% endif %}
+
+    <h4>Dependencies:</h4>
+    <ul class="taskDependenciesList">
+      {% for parent in task.dependencies.all %}
+      <li>
+        <a href="{% url 'tasks:detail' parent.id %}"
+          >{{ parent.title|slice:"0:50" }}</a
+        >
+      </li>
+      {% endfor %}
+    </ul>
+
+    <h4>Continuations:</h4>
+    <ul class="taskContinuationsList">
+      {% for child in task.continuations.all %}
+      <li>
+        <a href="{% url 'tasks:detail' child.id %}"
+          >{{ child.title|slice:"0:50" }}</a
+        >
+      </li>
+      {% endfor %}
+    </ul>
+
+    <div class="taskActions">
+      <input type="button" name="stop" value="Defer" id="stopButton" />
+      <input type="button" name="start" value="Start" id="startButton" />
+      <input type="button" name="done" value="Done" id="doneButton" />
+      <input type="button" name="cancel" value="Cancel" id="cancelButton" />
+      <input
+        type="button"
+        name="addDepencency"
+        value="Add dependency"
+        id="addDepencencyButton"
+      />
+    </div>
+    <script>
+      async function updateStatus(status) {
+        const url = "{% url 'tasks:update_status' task_id=task.id %}";
+        const params = new URLSearchParams({ status: status });
+        const response = await fetch(`${url}?${params}`);
+        const data = await response.json();
+        if (data["status"] === "ok") {
+          document.getElementById("taskStatus").textContent = data["newStatus"];
+          document.getElementById("taskStatus").className =
+            `status-${data["newStatus"]}`;
+        }
+      }
+      document
+        .getElementById("startButton")
+        .addEventListener("click", async () => {
+          await updateStatus("IN_PROGRESS");
+        });
+
+      document
+        .getElementById("stopButton")
+        .addEventListener("click", async () => {
+          await updateStatus("TODO");
+        });
+
+      document
+        .getElementById("doneButton")
+        .addEventListener("click", async () => {
+          await updateStatus("DONE");
+        });
+
+      document
+        .getElementById("cancelButton")
+        .addEventListener("click", async () => {
+          await updateStatus("CANCELLED");
+        });
+    </script>
+  </body>
+</html>

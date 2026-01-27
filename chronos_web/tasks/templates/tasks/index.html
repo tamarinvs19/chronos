@@ -1,0 +1,46 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tasks</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <link href="{% static 'tasks/css/style.css' %}" rel="stylesheet" />
+  </head>
+  <body>
+    <h1>Current tasks</h1>
+    <div class="navigationDiv">
+      <a class="navigationButton" href="{% url 'tasks:create2' %}"
+        >Create task</a
+      >
+      <a class="navigationButton" href="{% url 'tasks:create' %}">
+        Create task simple
+      </a>
+    </div>
+    <ul class="taskList">
+      {% for task in tasks %}
+      <li>
+        {% include "tasks/continuations.html" with task=task only %}
+      </li>
+      {% endfor %}
+    </ul>
+    <script>
+      for (let button of document.getElementsByClassName('toggle-continuations')) { 
+        button.addEventListener('click', function() {
+          const list = document.getElementById(button.id.slice(7));
+          const btn = this;
+          
+          if (list.style.display === 'none' || list.style.display === '') {
+            list.style.display = 'block';
+            btn.textContent = 'fold';
+          } else {
+            list.style.display = 'none';
+            btn.textContent = 'unfold';
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

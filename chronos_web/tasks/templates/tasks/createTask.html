@@ -1,0 +1,36 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create task</title>
+    <link href="{% static 'tasks/css/style.css' %}" rel="stylesheet" />
+  </head>
+  <body>
+    <form action="{% url 'tasks:create' %}" method="post">
+      {% csrf_token %}
+      <fieldset>
+        <legend><h1>Create task</h1></legend>
+        {% if error_message %}
+        <p><strong>{{ error_message }}</strong></p>
+        {% endif %}
+        <label for="title">Title: </label>
+        <input type="text" name="title" id="title" value="" />
+
+        <h4>Dependency:</h4>
+        {% for parent in tasks %}
+        <input
+          type="radio"
+          name="parent"
+          id="parent{{ forloop.counter }}"
+          value="{{ parent.id }}"
+        />
+        <label for="parent{{ forloop.counter }}">{{ parent.title }}</label>
+        <br />
+        {% endfor %}
+      </fieldset>
+      <input type="submit" value="Save" />
+    </form>
+  </body>
+</html>

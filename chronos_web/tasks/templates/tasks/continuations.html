@@ -1,0 +1,19 @@
+<div class="taskItemBlock status-{{ task.status }}">
+  <a class="taskLink" href="{% url 'tasks:detail' task.id %}">
+    {{ task.title }}
+  </a>
+  {% if task.continuations.all|length > 0 %}
+  <button id="toggle-continuations-{{ task.id }}" class="toggle-continuations">
+    unfold
+  </button>
+  {% endif %}
+  <div class="continuations-block" id="continuations-{{ task.id }}">
+    <ul class="taskList continuationsList">
+      {% for continuation in task.continuations.all %}
+      <li>
+        {% include "tasks/continuations.html" with task=continuation only %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
