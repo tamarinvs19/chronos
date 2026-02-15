@@ -6,11 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Tasks</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+    <script src="{% static 'tasks/js/taskStatusFlowIndex.js' %}"></script>
     <link href="{% static 'tasks/css/style.css' %}" rel="stylesheet" />
   </head>
   <body>
-    <h1>Current tasks</h1>
+    <h1 id="title" class="mainTitle">Current tasks</h1>
     <div class="navigationDiv">
       <a class="navigationButton" href="{% url 'tasks:create2' %}"
         >Create task</a
@@ -34,11 +37,30 @@
           
           if (list.style.display === 'none' || list.style.display === '') {
             list.style.display = 'block';
-            btn.textContent = 'fold';
+            const icon = btn.querySelector('.bi');
+            icon.className = "bi bi-chevron-down";
           } else {
             list.style.display = 'none';
-            btn.textContent = 'unfold';
+            const icon = btn.querySelector('.bi');
+            icon.className = "bi bi-chevron-up";
           }
+        });
+      }
+
+      const csrftoken = Cookies.get('csrftoken');
+      const updateStatusUrl = "{% url 'tasks:update_status' %}";
+      const buttonTypeToNewStatus = {
+        'start': "IN_PROGRESS",
+        'done': "DONE",
+        'cancel': "CANCELLED",
+        'defer': "TODO"
+      };
+      for (let button of document.getElementsByClassName('status-button')) { 
+        const taskId = button.id.split('-')[1];
+        const buttonType = button.id.split('Button-')[0];
+        const taskItemId = `taskItem-${taskId}`;
+        button.addEventListener('click', async function() {
+          await updateStatus(updateStatusUrl, buttonTypeToNewStatus[buttonType], taskId, taskItemId, csrftoken);
         });
       }
     </script>

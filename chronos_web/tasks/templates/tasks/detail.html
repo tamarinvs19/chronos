@@ -6,8 +6,11 @@
     <meta name="Task" content="width=device-width, initial-scale=1" />
     <title>{{ task.title|slice:"0:30" }}</title>
     <link href="{% static 'tasks/css/style.css' %}" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+    <script src="{% static 'tasks/js/taskStatusFlow.js' %}"></script>
   </head>
   <body>
+    {% include "tasks/navbar.html" %}
     <h3 class="taskTitle">{{ task.title }}</h3>
 
     <h5 class="taskStatus">
@@ -44,7 +47,7 @@
     </ul>
 
     <div class="taskActions">
-      <input type="button" name="stop" value="Defer" id="stopButton" />
+      <input type="button" name="stop" value="Defer" id="deferButton" />
       <input type="button" name="start" value="Start" id="startButton" />
       <input type="button" name="done" value="Done" id="doneButton" />
       <input type="button" name="cancel" value="Cancel" id="cancelButton" />
@@ -55,40 +58,26 @@
         id="addDepencencyButton"
       />
     </div>
-    <script>
-      async function updateStatus(status) {
-        const url = "{% url 'tasks:update_status' task_id=task.id %}";
-        const params = new URLSearchParams({ status: status });
-        const response = await fetch(`${url}?${params}`);
-        const data = await response.json();
-        if (data["status"] === "ok") {
-          document.getElementById("taskStatus").textContent = data["newStatus"];
-          document.getElementById("taskStatus").className =
-            `status-${data["newStatus"]}`;
-        }
-      }
-      document
-        .getElementById("startButton")
-        .addEventListener("click", async () => {
-          await updateStatus("IN_PROGRESS");
-        });
+    <script> 
+      const csrftoken = Cookies.get('csrftoken');
+      const updateStatusUrl = "{% url 'tasks:update_status' %}";
 
-      document
-        .getElementById("stopButton")
-        .addEventListener("click", async () => {
-          await updateStatus("TODO");
-        });
+      document.getElementById("startButton").addEventListener("click", async () => {
+        await updateStatus(updateStatusUrl, "IN_PROGRESS", {{ task.id }}, csrftoken);
+      });
 
-      document
-        .getElementById("doneButton")
-        .addEventListener("click", async () => {
-          await updateStatus("DONE");
-        });
+      document.getElementById("deferButton").addEventListener("click", async () => {
+        await updateStatus(updateStatusUrl, "TODO", {{ task.id }}, csrftoken);
+      });
+
+      document.getElementById("doneButton").addEventListener("click", async () => {
+        await updateStatus(updateStatusUrl, "DONE", {{ task.id }}, csrftoken);
+      });
 
       document
         .getElementById("cancelButton")
         .addEventListener("click", async () => {
-          await updateStatus("CANCELLED");
+          await updateStatus(updateStatusUrl, "CANCELLED", {{ task.id }}, csrftoken);
         });
     </script>
   </body>

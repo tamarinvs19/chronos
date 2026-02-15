@@ -7,6 +7,8 @@ from django.urls import reverse
 
 from tasks.forms import TaskForm
 
+import json
+
 from .models import Task
 
 
@@ -46,10 +48,12 @@ def create_task2(request: HttpRequest) -> HttpResponse:
     return render(request, "tasks/create.html", {"form": form})
 
 
-def update_status(request: HttpRequest, task_id: int) -> JsonResponse:
-    if request.method == "GET":
+def update_status(request: HttpRequest) -> JsonResponse:
+    if request.method == "POST":
+        request_body = json.loads(request.body)
+        task_id = request_body.get('task_id')
         task = Task.objects.get(id=task_id)
-        status_name = request.GET.get('status', '')
+        status_name = json.loads(request.body).get('status', '')
         match status_name:
             case 'TODO':
                 task.status = Task.TaskStatus.TODO
